@@ -31,11 +31,6 @@ namespace Octokit
         /// </summary>
         public string Sha { get; set; }
 
-		/// <summary>
-		/// The UTF-8 contents for the tree.
-		/// </summary>
-		public string Content { get; set; }
-
         internal string DebuggerDisplay
         {
             get { return String.Format(CultureInfo.InvariantCulture, "SHA: {0}, Path: {1}, Type: {2}", Sha, Path, Type); }
