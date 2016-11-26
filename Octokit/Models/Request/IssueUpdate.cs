@@ -1,11 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using Octokit.Internal;
 
 namespace Octokit
 {
+    /// <summary>
+    /// Specifies the values used to update an issue.
+    /// </summary>
     [DebuggerDisplay("{DebuggerDisplay,nq}")]
     public class IssueUpdate
     {
@@ -55,10 +57,14 @@ namespace Octokit
         {
             get
             {
-                return String.Format(CultureInfo.InvariantCulture, "Title: {0}",Title);
+                return string.Format(CultureInfo.InvariantCulture, "Title: {0}", Title);
             }
         }
 
+        /// <summary>
+        /// Adds the specified label to the issue.
+        /// </summary>
+        /// <param name="name">The name of the label.</param>
         public void AddLabel(string name)
         {
             // lazily create the label array
@@ -70,6 +76,9 @@ namespace Octokit
             Labels.Add(name);
         }
 
+        /// <summary>
+        /// Clears all the labels.
+        /// </summary>
         public void ClearLabels()
         {
             // lazily create the label array

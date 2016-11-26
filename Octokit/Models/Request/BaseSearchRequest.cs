@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 
@@ -11,6 +10,9 @@ namespace Octokit
     [SuppressMessage("Microsoft.Design", "CA1012:AbstractTypesShouldNotHaveConstructors")]
     public abstract class BaseSearchRequest
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="BaseSearchRequest"/> class.
+        /// </summary>
         protected BaseSearchRequest()
         {
             Page = 1;
@@ -18,6 +20,10 @@ namespace Octokit
             Order = SortDirection.Descending;
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="BaseSearchRequest"/> class.
+        /// </summary>
+        /// <param name="term">The term.</param>
         protected BaseSearchRequest(string term) : this()
         {
             Ensure.ArgumentNotNullOrEmptyString(term, "term");
@@ -37,6 +43,12 @@ namespace Octokit
             get;
         }
 
+        /// <summary>
+        /// Gets the sort order as a properly formatted lowercased query string parameter.
+        /// </summary>
+        /// <value>
+        /// The sort order.
+        /// </value>
         private string SortOrder
         {
             get
@@ -72,8 +84,15 @@ namespace Octokit
         {
             get
             {
-                var mergedParameters = String.Join("+", MergedQualifiers());
-                return Term + (mergedParameters.IsNotBlank() ? "+" + mergedParameters : "");
+                var mergedParameters = string.Join("+", MergedQualifiers());
+                if (string.IsNullOrEmpty(Term))
+                {
+                    return mergedParameters;
+                }
+                else
+                {
+                    return Term + (mergedParameters.IsNotBlank() ? "+" + mergedParameters : "");
+                }
             }
         }
 
@@ -91,7 +110,7 @@ namespace Octokit
                     , { "order", SortOrder }
                     , { "q", TermAndQualifiers }
                 };
-                if (!String.IsNullOrWhiteSpace(Sort))
+                if (!string.IsNullOrWhiteSpace(Sort))
                 {
                     d.Add("sort", Sort);
                 }

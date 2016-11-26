@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using NSubstitute;
-using Octokit.Tests.Helpers;
 using Xunit;
+using System.Net;
 
 namespace Octokit.Tests.Clients
 {
@@ -13,7 +13,7 @@ namespace Octokit.Tests.Clients
     /// </summary>
     public class TeamsClientTests
     {
-        public class TheConstructor
+        public class TheCtor
         {
             [Fact]
             public void EnsuresNonNullArguments()
@@ -25,14 +25,14 @@ namespace Octokit.Tests.Clients
         public class TheGetMethod
         {
             [Fact]
-            public void RequestsTheCorrectlUrl()
+            public void RequestsTheCorrectUrl()
             {
                 var connection = Substitute.For<IApiConnection>();
                 var client = new TeamsClient(connection);
 
                 client.Get(1);
 
-                connection.Received().Get<Team>(Arg.Is<Uri>(u => u.ToString() == "teams/1"), null);
+                connection.Received().Get<Team>(Arg.Is<Uri>(u => u.ToString() == "teams/1"));
             }
         }
 
@@ -46,7 +46,9 @@ namespace Octokit.Tests.Clients
 
                 client.GetAll("orgName");
 
-                connection.Received().GetAll<Team>(Arg.Is<Uri>(u => u.ToString() == "orgs/orgName/teams"));
+                connection.Received().GetAll<Team>(
+                    Arg.Is<Uri>(u => u.ToString() == "orgs/orgName/teams"),
+                    Args.ApiOptions);
             }
 
             [Fact]
@@ -55,6 +57,7 @@ namespace Octokit.Tests.Clients
                 var teams = new TeamsClient(Substitute.For<IApiConnection>());
 
                 await Assert.ThrowsAsync<ArgumentNullException>(() => teams.GetAll(null));
+                await Assert.ThrowsAsync<ArgumentNullException>(() => teams.GetAll("orgName", null));
             }
         }
 
@@ -68,7 +71,9 @@ namespace Octokit.Tests.Clients
 
                 client.GetAllMembers(1);
 
-                connection.Received().GetAll<User>(Arg.Is<Uri>(u => u.ToString() == "teams/1/members"));
+                connection.Received().GetAll<User>(
+                    Arg.Is<Uri>(u => u.ToString() == "teams/1/members"),
+                    Args.ApiOptions);
             }
         }
 
@@ -189,7 +194,9 @@ namespace Octokit.Tests.Clients
 
                 client.GetAllForCurrent();
 
-                connection.Received().GetAll<Team>(Arg.Is<Uri>(u => u.ToString() == "user/teams"));
+                connection.Received().GetAll<Team>(
+                    Arg.Is<Uri>(u => u.ToString() == "user/teams"),
+                    Args.ApiOptions);
             }
         }
 
@@ -214,7 +221,7 @@ namespace Octokit.Tests.Clients
             }
         }
 
-        public class TheRRemoveMembershipMethod
+        public class TheRemoveMembershipMethod
         {
             [Fact]
             public void RequestsTheCorrectUrl()
@@ -235,7 +242,6 @@ namespace Octokit.Tests.Clients
                 await Assert.ThrowsAsync<ArgumentNullException>(() => client.RemoveMembership(1, null));
                 await Assert.ThrowsAsync<ArgumentException>(() => client.RemoveMembership(1, ""));
             }
-
         }
 
         public class TheGetAllRepositoriesMethod
@@ -245,13 +251,14 @@ namespace Octokit.Tests.Clients
             {
                 var connection = Substitute.For<IApiConnection>();
                 var client = new TeamsClient(connection);
-                client.GetAllRepositories(1);
-
-                connection.Received().GetAll<Repository>(Arg.Is<Uri>(u => u.ToString() == "teams/1/repos"));
 
                 client.GetAllRepositories(1);
 
-                connection.Received().GetAll<Repository>(Arg.Is<Uri>(u => u.ToString() == "teams/1/repos"));
+                connection.Received().GetAll<Repository>(
+                    Arg.Is<Uri>(u => u.ToString() == "teams/1/repos"),
+                    null,
+                    "application/vnd.github.ironman-preview+json",
+                    Args.ApiOptions);
             }
         }
 
@@ -294,6 +301,18 @@ namespace Octokit.Tests.Clients
                 client.AddRepository(1, "org", "repo");
 
                 connection.Connection.Received().Put(Arg.Is<Uri>(u => u.ToString() == "teams/1/repos/org/repo"));
+            }
+
+            [Fact]
+            public void AddOrUpdatePermission()
+            {
+                var connection = Substitute.For<IApiConnection>();
+                var client = new TeamsClient(connection);
+                var newPermission = new RepositoryPermissionRequest(Permission.Admin);
+
+                client.AddRepository(1, "org", "repo", newPermission);
+
+                connection.Connection.Received().Put<HttpStatusCode>(Arg.Is<Uri>(u => u.ToString() == "teams/1/repos/org/repo"), Arg.Any<object>(), "", "application/vnd.github.ironman-preview+json");
             }
 
             [Fact]

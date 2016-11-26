@@ -102,9 +102,11 @@ namespace Octokit
         /// </summary>
         public Uri PullRequestUrl { get; protected set; }
 
+        public ReactionSummary Reactions { get; protected set; }
+
         internal string DebuggerDisplay
         {
-            get { return String.Format(CultureInfo.InvariantCulture, "Id: {0}, Path: {1}, User: {2}, Url: {3}", Id, Path, User.DebuggerDisplay, Url); }
+            get { return string.Format(CultureInfo.InvariantCulture, "Id: {0}, Path: {1}, User: {2}, Url: {3}", Id, Path, User.DebuggerDisplay, Url); }
         }
     }
 
@@ -118,6 +120,6 @@ namespace Octokit
         /// <summary>
         /// Sort by the date of the last update
         /// </summary>
-        Updated,
+        Updated
     }
 }

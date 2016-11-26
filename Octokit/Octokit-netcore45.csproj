@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -11,12 +11,15 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Octokit</RootNamespace>
     <AssemblyName>Octokit</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>
+    </TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <CodeAnalysisCulture>en-US</CodeAnalysisCulture>
     <ProjectTypeGuids>{BC8A1FFA-BEE3-4634-8014-F334798102B3};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <DefaultLanguage>en-US</DefaultLanguage>
     <LangVersion>5</LangVersion>
+    <TargetPlatformVersion>8.1</TargetPlatformVersion>
+    <MinimumVisualStudioVersion>12</MinimumVisualStudioVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -41,8 +44,8 @@
     <WarningLevel>4</WarningLevel>
     <RunCodeAnalysis>true</RunCodeAnalysis>
     <CodeAnalysisRuleSet>..\Octokit.ruleset</CodeAnalysisRuleSet>
-    <DocumentationFile>
-    </DocumentationFile>
+    <DocumentationFile>bin\Release\NetCore45\Octokit.XML</DocumentationFile>
+    <NoWarn>1591</NoWarn>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="..\SolutionInfo.cs">
@@ -70,6 +73,8 @@
     <Compile Include="Clients\IActivitiesClient.cs" />
     <Compile Include="Clients\IPullRequestReviewCommentsClient.cs" />
     <Compile Include="Clients\IPullRequestsClient.cs" />
+    <Compile Include="Clients\IRepositoryPagesClient.cs" />
+    <Compile Include="Clients\IUserAdministrationClient.cs" />
     <Compile Include="Clients\PullRequestReviewCommentsClient.cs" />
     <Compile Include="Clients\PullRequestsClient.cs" />
     <Compile Include="Clients\IAssigneesClient.cs" />
@@ -97,7 +102,6 @@
     <Compile Include="Clients\IRepositoriesClient.cs" />
     <Compile Include="Clients\IRepositoryForksClient.cs" />
     <Compile Include="Clients\IRepositoryHooksClient.cs" />
-    <Compile Include="Clients\ISshKeysClient.cs" />
     <Compile Include="Clients\IssueCommentsClient.cs" />
     <Compile Include="Clients\IssuesClient.cs" />
     <Compile Include="Clients\IssuesLabelsClient.cs" />
@@ -120,12 +124,13 @@
     <Compile Include="Clients\RepositoriesClient.cs" />
     <Compile Include="Clients\RepositoryForksClient.cs" />
     <Compile Include="Clients\RepositoryHooksClient.cs" />
-    <Compile Include="Clients\SshKeysClient.cs" />
+    <Compile Include="Clients\RepositoryPagesClient.cs" />
     <Compile Include="Clients\StarredClient.cs" />
     <Compile Include="Clients\StatisticsClient.cs" />
     <Compile Include="Clients\TagsClient.cs" />
     <Compile Include="Clients\TreesClient.cs" />
     <Compile Include="Clients\TeamsClient.cs" />
+    <Compile Include="Clients\UserAdministrationClient.cs" />
     <Compile Include="Clients\UsersClient.cs" />
     <Compile Include="Clients\WatchedClient.cs" />
     <Compile Include="Exceptions\ApiException.cs" />
@@ -144,8 +149,8 @@
     <Compile Include="Helpers\EnumExtensions.cs" />
     <Compile Include="Helpers\IApiPagination.cs" />
     <Compile Include="Helpers\IReadOnlyPagedCollection.cs" />
-    <Compile Include="Helpers\ModelExtensions.cs" />
     <Compile Include="Helpers\ParameterAttribute.cs" />
+    <Compile Include="Helpers\AcceptHeaders.cs" />
     <Compile Include="Helpers\ReflectionExtensions.cs" />
     <Compile Include="Helpers\TwoFactorChallengeResult.cs" />
     <Compile Include="Helpers\UriExtensions.cs" />
@@ -180,6 +185,8 @@
     <Compile Include="Http\IResponse.cs" />
     <Compile Include="Http\Request.cs" />
     <Compile Include="Models\Request\AuthorizationUpdate.cs" />
+    <Compile Include="Models\Request\BranchProtectionUpdate.cs" />
+    <Compile Include="Models\Request\BranchUpdate.cs" />
     <Compile Include="Models\Request\GistRequest.cs" />
     <Compile Include="Models\Request\GistUpdate.cs" />
     <Compile Include="Models\Request\EditRepositoryHook.cs" />
@@ -208,6 +215,7 @@
     <Compile Include="Models\Request\NewTreeItem.cs" />
     <Compile Include="Models\Request\NewTeam.cs" />
     <Compile Include="Models\Request\NewMerge.cs" />
+    <Compile Include="Models\Request\OrganizationRequest.cs" />
     <Compile Include="Models\Request\OrganizationUpdate.cs" />
     <Compile Include="Models\Request\Permission.cs" />
     <Compile Include="Models\Request\ReferenceUpdate.cs" />
@@ -217,7 +225,6 @@
     <Compile Include="Models\Request\ReleaseUpdate.cs" />
     <Compile Include="Models\Request\RepositoryIssueRequest.cs" />
     <Compile Include="Models\Request\RequestParameters.cs" />
-    <Compile Include="Models\Request\SshKeyUpdate.cs" />
     <Compile Include="Models\Request\StarredRequest.cs" />
     <Compile Include="Models\Request\UpdateTeam.cs" />
     <Compile Include="Models\Request\UserUpdate.cs" />
@@ -240,6 +247,7 @@
     <Compile Include="Models\Response\Authorization.cs" />
     <Compile Include="Models\Response\Blob.cs" />
     <Compile Include="Models\Response\Branch.cs" />
+    <Compile Include="Models\Response\BranchProtection.cs" />
     <Compile Include="Models\Response\Commit.cs" />
     <Compile Include="Models\Response\CommitStatus.cs" />
     <Compile Include="Models\Response\Contributor.cs" />
@@ -264,6 +272,8 @@
     <Compile Include="Models\Response\Notification.cs" />
     <Compile Include="Models\Response\NotificationInfo.cs" />
     <Compile Include="Models\Response\Organization.cs" />
+    <Compile Include="Models\Response\Page.cs" />
+    <Compile Include="Models\Response\PagesBuild.cs" />
     <Compile Include="Models\Response\Plan.cs" />
     <Compile Include="Models\Response\PullRequest.cs" />
     <Compile Include="Models\Response\PullRequestMerge.cs" />
@@ -276,8 +286,6 @@
     <Compile Include="Models\Response\RepositoryContributor.cs" />
     <Compile Include="Models\Response\SearchRepositoryResult.cs" />
     <Compile Include="Models\Response\RepositoryHook.cs" />
-    <Compile Include="Models\Response\SshKey.cs" />
-    <Compile Include="Models\Response\SshKeyInfo.cs" />
     <Compile Include="Models\Response\Subscription.cs" />
     <Compile Include="Models\Response\TagObject.cs" />
     <Compile Include="Models\Response\TreeItem.cs" />
@@ -361,7 +369,6 @@
     <Compile Include="Models\Response\DeployKey.cs" />
     <Compile Include="Clients\IUserKeysClient.cs" />
     <Compile Include="Clients\UserKeysClient.cs" />
-    <Compile Include="Helpers\ApiUrls.Keys.cs" />
     <Compile Include="Helpers\SerializeNullAttribute.cs" />
     <Compile Include="Models\Request\CommitRequest.cs" />
     <Compile Include="Models\Response\RepositoryPermissions.cs" />
@@ -380,7 +387,6 @@
     <Compile Include="Models\Response\RepositoryContent.cs" />
     <Compile Include="Models\Response\RepositoryContentChangeSet.cs" />
     <Compile Include="Models\Response\CommitContent.cs" />
-    <Compile Include="Models\Response\SignatureResponse.cs" />
     <Compile Include="Helpers\PropertyOrField.cs" />
     <Compile Include="Helpers\ApiUrls.Authorizations.cs" />
     <Compile Include="Models\Response\ApplicationAuthorization.cs" />
@@ -403,13 +409,111 @@
     <Compile Include="Models\Response\MiscellaneousRateLimit.cs" />
     <Compile Include="Exceptions\RepositoryFormatException.cs" />
     <Compile Include="Http\RequestBody.cs" />
+    <Compile Include="Http\IApiInfoProvider.cs" />
+    <Compile Include="Models\Response\Meta.cs" />
+    <Compile Include="Models\Common\Committer.cs" />
+    <Compile Include="Models\Request\NewArbitraryMarkDown.cs" />
+    <Compile Include="Exceptions\InvalidGitIgnoreTemplateException.cs" />
+    <Compile Include="Models\Request\NewRepositoryWebHook.cs" />
+    <Compile Include="Exceptions\RepositoryWebHookConfigException.cs" />
+    <Compile Include="Helpers\WebHookConfigComparer.cs" />
+    <Compile Include="Exceptions\PullRequestNotMergeableException.cs" />
+    <Compile Include="Exceptions\PullRequestMismatchException.cs" />
+    <Compile Include="Models\Response\RepositoryStar.cs" />
+    <Compile Include="Models\Response\UserStar.cs" />
+    <Compile Include="Clients\Enterprise\EnterpriseAdminStatsClient.cs" />
+    <Compile Include="Clients\Enterprise\EnterpriseClient.cs" />
+    <Compile Include="Clients\Enterprise\IEnterpriseAdminStatsClient.cs" />
+    <Compile Include="Clients\Enterprise\IEnterpriseClient.cs" />
+    <Compile Include="Models\Response\Enterprise\AdminStats.cs" />
+    <Compile Include="Models\Response\Enterprise\AdminStatsComments.cs" />
+    <Compile Include="Models\Response\Enterprise\AdminStatsGists.cs" />
+    <Compile Include="Models\Response\Enterprise\AdminStatsHooks.cs" />
+    <Compile Include="Models\Response\Enterprise\AdminStatsIssues.cs" />
+    <Compile Include="Models\Response\Enterprise\AdminStatsMilestones.cs" />
+    <Compile Include="Models\Response\Enterprise\AdminStatsOrgs.cs" />
+    <Compile Include="Models\Response\Enterprise\AdminStatsPages.cs" />
+    <Compile Include="Models\Response\Enterprise\AdminStatsPulls.cs" />
+    <Compile Include="Models\Response\Enterprise\AdminStatsRepos.cs" />
+    <Compile Include="Models\Response\Enterprise\AdminStatsUsers.cs" />
+    <Compile Include="Helpers\ReferenceExtensions.cs" />
+    <Compile Include="Clients\Enterprise\EnterpriseLicenseClient.cs" />
+    <Compile Include="Clients\Enterprise\IEnterpriseLicenseClient.cs" />
+    <Compile Include="Models\Response\Enterprise\LicenseInfo.cs" />
+    <Compile Include="Clients\Enterprise\EnterpriseOrganizationClient.cs" />
+    <Compile Include="Clients\Enterprise\IEnterpriseOrganizationClient.cs" />
+    <Compile Include="Clients\Enterprise\EnterpriseSearchIndexingClient.cs" />
+    <Compile Include="Clients\Enterprise\IEnterpriseSearchIndexingClient.cs" />
+    <Compile Include="Models\Request\Enterprise\NewOrganization.cs" />
+    <Compile Include="Models\Request\Enterprise\SearchIndexingTarget.cs" />
+    <Compile Include="Models\Response\Enterprise\SearchIndexingResponse.cs" />
+    <Compile Include="Models\Request\ApiOptions.cs" />
+    <Compile Include="Helpers\Pagination.cs" />
+    <Compile Include="Clients\Enterprise\EnterpriseLdapClient.cs" />
+    <Compile Include="Clients\Enterprise\IEnterpriseLdapClient.cs" />
+    <Compile Include="Models\Request\Enterprise\NewLdapMapping.cs" />
+    <Compile Include="Models\Response\Enterprise\LdapSyncResponse.cs" />
+    <Compile Include="Models\Request\NewImpersonationToken.cs" />
+    <Compile Include="Models\Request\NewUser.cs" />
+    <Compile Include="Models\Request\UserRename.cs" />
+    <Compile Include="Models\Response\UserRenameResponse.cs" />
+    <Compile Include="Models\Request\NewPublicKey.cs" />
+    <Compile Include="Exceptions\LegalRestrictionException.cs" />
+    <Compile Include="Models\Request\SearchIssuesRequestExclusions.cs" />
+    <Compile Include="Clients\IMigrationClient.cs" />
+    <Compile Include="Clients\IMigrationsClient.cs" />
+    <Compile Include="Clients\MigrationClient.cs" />
+    <Compile Include="Clients\MigrationsClient.cs" />
+    <Compile Include="Models\Request\StartMigrationRequest.cs" />
+    <Compile Include="Models\Response\Migration.cs" />
+    <Compile Include="Models\Request\NewReaction.cs" />
+    <Compile Include="Clients\ReactionsClient.cs" />
+    <Compile Include="Clients\IReactionsClient.cs" />
+    <Compile Include="Clients\CommitCommentReactionsClient.cs" />
+    <Compile Include="Clients\ICommitCommentReactionsClient.cs" />
+    <Compile Include="Clients\IIssueReactionsClient.cs" />
+    <Compile Include="Clients\IssueReactionsClient.cs" />
+    <Compile Include="Models\Response\Reaction.cs" />
+    <Compile Include="Clients\IIssueCommentReactionsClient.cs" />
+    <Compile Include="Clients\IssueCommentReactionsClient.cs" />
+    <Compile Include="Clients\IPullRequestReviewCommentReactionsClient.cs" />
+    <Compile Include="Clients\PullRequestReviewCommentReactionsClient.cs" />
+    <Compile Include="Models\Request\RepositoryPermissionRequest.cs" />
+    <Compile Include="Clients\IUserGpgKeysClient.cs" />
+    <Compile Include="Clients\UserGpgKeysClient.cs" />
+    <Compile Include="Models\Request\NewGpgKey.cs" />
+    <Compile Include="Models\Response\GpgKey.cs" />
+    <Compile Include="Models\Response\ReactionSummary.cs" />
+    <Compile Include="Models\Response\Verification.cs" />
+    <Compile Include="Clients\Enterprise\EnterpriseProbe.cs" />
+    <Compile Include="Clients\Enterprise\IEnterpriseProbe.cs" />
+    <Compile Include="Models\Response\RepositoryInvitation.cs" />
+    <Compile Include="Clients\IRepositoryInvitationsClient.cs" />
+    <Compile Include="Clients\RepositoryInvitationsClient.cs" />
+    <Compile Include="Models\Request\InvitationUpdate.cs" />
+    <Compile Include="Models\Request\CollaboratorRequest.cs" />
+    <Compile Include="Clients\IIssueTimelineClient.cs" />
+    <Compile Include="Clients\IssueTimelineClient.cs" />
+    <Compile Include="Models\Response\RenameInfo.cs" />
+    <Compile Include="Models\Response\SourceInfo.cs" />
+    <Compile Include="Models\Response\TimelineEventInfo.cs" />
+    <Compile Include="Clients\IRepositoryBranchesClient.cs" />
+    <Compile Include="Clients\RepositoryBranchesClient.cs" />
+    <Compile Include="Models\Response\RepositoryTrafficClone.cs" />
+    <Compile Include="Models\Response\RepositoryTrafficPath.cs" />
+    <Compile Include="Models\Response\RepositoryTrafficReferrer.cs" />
+    <Compile Include="Models\Response\RepositoryTrafficView.cs" />
+    <Compile Include="Clients\IRepositoryTrafficClient.cs" />
+    <Compile Include="Models\Request\RepositoryTrafficRequest.cs" />
+    <Compile Include="Clients\RepositoryTrafficClient.cs" />
+    <Compile Include="Helpers\ExcludeFromPaginationConventionTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <CodeAnalysisDictionary Include="..\CustomDictionary.xml">
       <Link>CustomDictionary.xml</Link>
     </CodeAnalysisDictionary>
   </ItemGroup>
-  <Import Project="$(MSBuildExtensionsPath)\Microsoft\WindowsXaml\v12.0\Microsoft.Windows.UI.Xaml.CSharp.targets" />
+  <Import Project="$(MSBuildExtensionsPath)\Microsoft\WindowsXaml\v14.0\Microsoft.Windows.UI.Xaml.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

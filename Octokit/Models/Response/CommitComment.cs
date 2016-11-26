@@ -1,14 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Octokit
 {
-    [DebuggerDisplay("{DebuggerDisplay,nq}")]    
+    [DebuggerDisplay("{DebuggerDisplay,nq}")]
     public class CommitComment
     {
         public CommitComment() { }
@@ -83,11 +79,13 @@ namespace Octokit
         /// </summary>
         public DateTimeOffset? UpdatedAt { get; protected set; }
 
+        public ReactionSummary Reactions { get; protected set; }
+
         internal string DebuggerDisplay
         {
             get
             {
-                return String.Format(CultureInfo.InvariantCulture, "Id: {0}, Commit Id: {1}, CreatedAt: {2}", Id, CommitId, CreatedAt);
+                return string.Format(CultureInfo.InvariantCulture, "Id: {0}, Commit Id: {1}, CreatedAt: {2}", Id, CommitId, CreatedAt);
             }
         }
     }

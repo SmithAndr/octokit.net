@@ -15,6 +15,14 @@ namespace Octokit.Reactive
         IObservable<Emoji> GetAllEmojis();
 
         /// <summary>
+        /// Gets the rendered Markdown for an arbitrary markdown document.
+        /// </summary>
+        /// <param name="markdown">An arbitrary Markdown document</param>
+        /// <exception cref="ApiException">Thrown when a general API error occurs.</exception>
+        /// <returns>The rendered Markdown.</returns>
+        IObservable<string> RenderArbitraryMarkdown(NewArbitraryMarkdown markdown);
+
+        /// <summary>
         /// Gets the rendered Markdown for the specified plain-text Markdown document.
         /// </summary>
         /// <param name="markdown">A plain-text Markdown document</param>
@@ -45,7 +53,7 @@ namespace Octokit.Reactive
         IObservable<LicenseMetadata> GetAllLicenses();
 
         /// <summary>
-        /// Retrieves a license based on the licence key such as "mit"
+        /// Retrieves a license based on the license key such as "mit"
         /// </summary>
         /// <param name="key"></param>
         /// <returns>A <see cref="License" /> that includes the license key, text, and attributes of the license.</returns>
@@ -56,8 +64,15 @@ namespace Octokit.Reactive
         /// </summary>
         /// <exception cref="ApiException">Thrown when a general API error occurs.</exception>
         /// <returns>An <see cref="MiscellaneousRateLimit"/> of Rate Limits.</returns>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1024:UsePropertiesWhereAppropriate")]
+        [SuppressMessage("Microsoft.Design", "CA1024:UsePropertiesWhereAppropriate")]
         IObservable<MiscellaneousRateLimit> GetRateLimits();
 
+        /// <summary>
+        /// Retrieves information about GitHub.com, the service or a GitHub Enterprise installation.
+        /// </summary>
+        /// <exception cref="ApiException">Thrown when a general API error occurs.</exception>
+        /// <returns>An <see cref="Meta"/> containing metadata about the GitHub instance.</returns>
+        [SuppressMessage("Microsoft.Design", "CA1024:UsePropertiesWhereAppropriate")]
+        IObservable<Meta> GetMetadata();
     }
 }

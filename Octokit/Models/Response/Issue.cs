@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
-using System.Linq;
 
 namespace Octokit
 {
@@ -12,14 +10,18 @@ namespace Octokit
     {
         public Issue() { }
 
-        public Issue(Uri url, Uri htmlUrl, int number, ItemState state, string title, string body, User user, IReadOnlyList<Label> labels, User assignee, Milestone milestone, int comments, PullRequest pullRequest, DateTimeOffset? closedAt, DateTimeOffset createdAt, DateTimeOffset? updatedAt)
+        public Issue(Uri url, Uri htmlUrl, Uri commentsUrl, Uri eventsUrl, int number, ItemState state, string title, string body, User closedBy, User user, IReadOnlyList<Label> labels, User assignee, Milestone milestone, int comments, PullRequest pullRequest, DateTimeOffset? closedAt, DateTimeOffset createdAt, DateTimeOffset? updatedAt, int id, bool locked, Repository repository)
         {
+            Id = id;
             Url = url;
             HtmlUrl = htmlUrl;
+            CommentsUrl = commentsUrl;
+            EventsUrl = eventsUrl;
             Number = number;
             State = state;
             Title = title;
             Body = body;
+            ClosedBy = closedBy;
             User = user;
             Labels = labels;
             Assignee = assignee;
@@ -29,14 +31,34 @@ namespace Octokit
             ClosedAt = closedAt;
             CreatedAt = createdAt;
             UpdatedAt = updatedAt;
+            Locked = locked;
+            Repository = repository;
         }
 
         /// <summary>
-        /// The URL for this milestone.
+        /// The Id for this issue
+        /// </summary>
+        public int Id { get; protected set; }
+
+        /// <summary>
+        /// The URL for this issue.
         /// </summary>
         public Uri Url { get; protected set; }
 
+        /// <summary>
+        /// The URL for the HTML view of this issue.
+        /// </summary>
         public Uri HtmlUrl { get; protected set; }
+
+        /// <summary>
+        /// The Comments URL of this issue.
+        /// </summary>
+        public Uri CommentsUrl { get; protected set; }
+
+        /// <summary>
+        /// The Events URL of this issue.
+        /// </summary>
+        public Uri EventsUrl { get; protected set; }
 
         /// <summary>
         /// The issue number.
@@ -59,10 +81,15 @@ namespace Octokit
         public string Body { get; protected set; }
 
         /// <summary>
+        /// Details about the user who has closed this issue.
+        /// </summary>
+        public User ClosedBy { get; protected set; }
+
+        /// <summary>
         /// The user that created the issue.
         /// </summary>
         public User User { get; protected set; }
-        
+
         /// <summary>
         /// The set of labels applied to the issue
         /// </summary>
@@ -84,7 +111,7 @@ namespace Octokit
         public int Comments { get; protected set; }
 
         public PullRequest PullRequest { get; protected set; }
-        
+
         /// <summary>
         /// The date the issue was closed if closed.
         /// </summary>
@@ -100,11 +127,23 @@ namespace Octokit
         /// </summary>
         public DateTimeOffset? UpdatedAt { get; protected set; }
 
+        /// <summary>
+        /// If the issue is locked or not.
+        /// </summary>
+        public bool Locked { get; protected set; }
+
+        /// <summary>
+        /// The repository the issue comes from.
+        /// </summary>
+        public Repository Repository { get; protected set; }
+
+        public ReactionSummary Reactions { get; protected set; }
+
         internal string DebuggerDisplay
         {
             get
             {
-                return String.Format(CultureInfo.InvariantCulture, "Number: {0} State: {1}", Number, State);
+                return string.Format(CultureInfo.InvariantCulture, "Number: {0} State: {1}", Number, State);
             }
         }
 

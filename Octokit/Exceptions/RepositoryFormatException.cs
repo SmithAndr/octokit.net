@@ -2,10 +2,8 @@
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
-using System.Linq;
 using System.Runtime.Serialization;
-using System.Text;
-using System.Threading.Tasks;
+using System.Security;
 
 namespace Octokit
 {
@@ -25,7 +23,6 @@ namespace Octokit
                 CultureInfo.InvariantCulture,
                 "The list of repositories must be formatted as 'owner/name' - these values don't match this rule: {0}",
                 parameterList);
-
         }
 
         public override string Message
@@ -36,7 +33,7 @@ namespace Octokit
             }
         }
 
-        #if !NETFX_CORE
+#if !NETFX_CORE
         /// <summary>
         /// Constructs an instance of LoginAttemptsExceededException
         /// </summary>
@@ -55,6 +52,7 @@ namespace Octokit
             message = info.GetString("Message");
         }
 
+        [SecurityCritical]
         public override void GetObjectData(SerializationInfo info, StreamingContext context)
         {
             base.GetObjectData(info, context);

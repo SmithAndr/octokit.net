@@ -13,10 +13,23 @@ namespace Octokit.Reactive
         /// See <a href="http://developer.github.com/v3/oauth/#list-your-authorizations">API documentation</a> for more
         /// details.
         /// </remarks>
-        /// <returns>An <see cref="Authorization"/></returns>
+        /// <returns>A list of <see cref="Authorization"/>s for the authenticated user.</returns>
         [SuppressMessage("Microsoft.Design", "CA1024:UsePropertiesWhereAppropriate",
             Justification = "It's an API call, so it's not a property.")]
         IObservable<Authorization> GetAll();
+
+        /// <summary>
+        /// Get all <see cref="Authorization"/>s for the authenticated user. This method requires basic auth.
+        /// </summary>
+        /// <remarks>
+        /// See <a href="http://developer.github.com/v3/oauth/#list-your-authorizations">API documentation</a> for more
+        /// details.
+        /// </remarks>
+        /// <param name="options">Options for changing the API response</param>
+        /// <returns>A list of <see cref="Authorization"/>s for the authenticated user.</returns>
+        [SuppressMessage("Microsoft.Design", "CA1024:UsePropertiesWhereAppropriate",
+            Justification = "It's an API call, so it's not a property.")]
+        IObservable<Authorization> GetAll(ApiOptions options);
 
         /// <summary>
         /// Get a specific <see cref="Authorization"/> for the authenticated user. This method requires basic auth.
@@ -32,6 +45,43 @@ namespace Octokit.Reactive
         IObservable<Authorization> Get(int id);
 
         /// <summary>
+        /// Creates a new personal token for the authenticated user.
+        /// </summary>
+        /// <remarks>
+        /// This method requires authentication.
+        /// See the <a href="https://developer.github.com/v3/oauth_authorizations/#create-a-new-authorization">API documentation</a> for more information.
+        /// </remarks>
+        /// <param name="newAuthorization">Describes the new authorization to create</param>
+        /// <exception cref="AuthorizationException">
+        /// Thrown when the current user does not have permission to make this request.
+        /// </exception>
+        /// <exception cref="TwoFactorRequiredException">
+        /// Thrown when the current account has two-factor authentication enabled and an authentication code is required.
+        /// </exception>
+        /// <exception cref="ApiException">Thrown when a general API error occurs.</exception>
+        /// <returns>The created <see cref="Authorization"/>.</returns>
+        IObservable<ApplicationAuthorization> Create(NewAuthorization newAuthorization);
+
+        /// <summary>
+        /// Creates a new personal token for the authenticated user.
+        /// </summary>
+        /// <remarks>
+        /// This method requires authentication.
+        /// See the <a href="https://developer.github.com/v3/oauth_authorizations/#create-a-new-authorization">API documentation</a> for more information.
+        /// </remarks>
+        /// <param name="twoFactorAuthenticationCode">The two-factor authentication code in response to the current user's previous challenge</param>
+        /// <param name="newAuthorization">Describes the new authorization to create</param>
+        /// <exception cref="AuthorizationException">
+        /// Thrown when the current user does not have permission to make this request.
+        /// </exception>
+        /// <exception cref="TwoFactorRequiredException">
+        /// Thrown when the current account has two-factor authentication enabled and an authentication code is required.
+        /// </exception>
+        /// <exception cref="ApiException">Thrown when a general API error occurs.</exception>
+        /// <returns>The created <see cref="Authorization"/>.</returns>
+        IObservable<ApplicationAuthorization> Create(NewAuthorization newAuthorization, string twoFactorAuthenticationCode);
+
+        /// <summary>
         /// Creates a new authorization for the specified OAuth application if an authorization for that application
         /// doesn’t already exist for the user; otherwise, it fails.
         /// </summary>
@@ -39,7 +89,7 @@ namespace Octokit.Reactive
         /// This method requires authentication.
         /// See the <a href="http://developer.github.com/v3/oauth/#get-or-create-an-authorization-for-a-specific-app">API documentation</a> for more information.
         /// </remarks>
-        /// <param name="clientId">Client ID of the OAuth application for the token</param>
+        /// <param name="clientId">Client Id of the OAuth application for the token</param>
         /// <param name="clientSecret">The client secret</param>
         /// <param name="newAuthorization">Describes the new authorization to create</param>
         /// <exception cref="AuthorizationException">
@@ -63,7 +113,7 @@ namespace Octokit.Reactive
         /// This method requires authentication.
         /// See the <a href="http://developer.github.com/v3/oauth/#get-or-create-an-authorization-for-a-specific-app">API documentation</a> for more information.
         /// </remarks>
-        /// <param name="clientId">Client ID of the OAuth application for the token</param>
+        /// <param name="clientId">Client Id of the OAuth application for the token</param>
         /// <param name="clientSecret">The client secret</param>
         /// <param name="twoFactorAuthenticationCode">The two-factor authentication code in response to the current user's previous challenge</param>
         /// <param name="newAuthorization">Describes the new authorization to create</param>
@@ -90,7 +140,7 @@ namespace Octokit.Reactive
         /// See <a href="http://developer.github.com/v3/oauth/#get-or-create-an-authorization-for-a-specific-app">API
         /// documentation</a> for more details.
         /// </remarks>
-        /// <param name="clientId">Client ID for the OAuth application that is requesting the token</param>
+        /// <param name="clientId">Client Id for the OAuth application that is requesting the token</param>
         /// <param name="clientSecret">The client secret</param>
         /// <param name="newAuthorization">Defines the scopes and metadata for the token</param>
         /// <exception cref="AuthorizationException">Thrown when the user does not have permission to make 
@@ -112,7 +162,7 @@ namespace Octokit.Reactive
         /// See <a href="http://developer.github.com/v3/oauth/#get-or-create-an-authorization-for-a-specific-app">API 
         /// documentation</a> for more details.
         /// </remarks>
-        /// <param name="clientId">Client ID for the OAuth application that is requesting the token</param>
+        /// <param name="clientId">Client Id for the OAuth application that is requesting the token</param>
         /// <param name="clientSecret">The client secret</param>
         /// <param name="newAuthorization">Defines the scopes and metadata for the token</param>
         /// <param name="twoFactorAuthenticationCode">The two-factor authentication code provided by the user</param>
@@ -134,13 +184,13 @@ namespace Octokit.Reactive
         /// This method requires authentication.
         /// See the <a href="https://developer.github.com/v3/oauth_authorizations/#check-an-authorization">API documentation</a> for more information.
         /// </remarks>
-        /// <param name="clientId">Client ID of the OAuth application for the token</param>
+        /// <param name="clientId">Client Id of the OAuth application for the token</param>
         /// <param name="accessToken">The OAuth token to check</param>
         /// <returns>The valid <see cref="ApplicationAuthorization"/>.</returns>
         IObservable<ApplicationAuthorization> CheckApplicationAuthentication(string clientId, string accessToken);
 
         /// <summary>
-        /// Resets a valid OAuth token for an OAuth application without end user involvment.
+        /// Resets a valid OAuth token for an OAuth application without end user involvement.
         /// </summary>
         /// <remarks>
         /// This method requires authentication.
@@ -164,17 +214,6 @@ namespace Octokit.Reactive
         IObservable<Unit> RevokeApplicationAuthentication(string clientId, string accessToken);
 
         /// <summary>
-        /// Revokes every OAuth token for an OAuth application.
-        /// </summary>
-        /// <remarks>
-        /// This method requires authentication.
-        /// See the <a href="https://developer.github.com/v3/oauth_authorizations/#revoke-all-authorizations-for-an-application">API documentation for more information.</a>
-        /// </remarks>
-        /// <param name="clientId">ClientID of the OAuth application for the token</param>
-        /// <returns></returns>
-        IObservable<Unit> RevokeAllApplicationAuthentications(string clientId);
-
-        /// <summary>
         /// Update the <see cref="Authorization"/> specified by the id.
         /// </summary>
         /// <param name="id">The id of the <see cref="Authorization"/></param>
@@ -190,7 +229,7 @@ namespace Octokit.Reactive
         /// See the <a href="http://developer.github.com/v3/oauth/#delete-an-authorization">API 
         /// documentation</a> for more details.
         /// </remarks>
-        /// <param name="id">The system-wide ID of the authorization to delete</param>
+        /// <param name="id">The system-wide Id of the authorization to delete</param>
         /// <exception cref="AuthorizationException">
         /// Thrown when the current user does not have permission to make the request.
         /// </exception>
@@ -205,7 +244,7 @@ namespace Octokit.Reactive
         /// See the <a href="http://developer.github.com/v3/oauth/#delete-an-authorization">API 
         /// documentation</a> for more details.
         /// </remarks>
-        /// <param name="id">The system-wide ID of the authorization to delete</param>
+        /// <param name="id">The system-wide Id of the authorization to delete</param>
         /// <param name="twoFactorAuthenticationCode">Two factor authorization code</param>
         /// <exception cref="AuthorizationException">
         /// Thrown when the current user does not have permission to make the request.

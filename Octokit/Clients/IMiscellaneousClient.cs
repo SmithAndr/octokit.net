@@ -1,8 +1,8 @@
 ﻿#if NET_45
+using System.Threading.Tasks;
 using System.Collections.Generic;
 #endif
 using System.Diagnostics.CodeAnalysis;
-using System.Threading.Tasks;
 
 namespace Octokit
 {
@@ -31,6 +31,14 @@ namespace Octokit
         Task<string> RenderRawMarkdown(string markdown);
 
         /// <summary>
+        /// Gets the rendered Markdown for an arbitrary markdown document.
+        /// </summary>
+        /// <param name="markdown">An arbitrary Markdown document</param>
+        /// <exception cref="ApiException">Thrown when a general API error occurs.</exception>
+        /// <returns>The rendered Markdown.</returns>
+        Task<string> RenderArbitraryMarkdown(NewArbitraryMarkdown markdown);
+
+        /// <summary>
         /// List all templates available to pass as an option when creating a repository.
         /// </summary>
         /// <returns>A list of template names</returns>
@@ -54,7 +62,7 @@ namespace Octokit
         Task<IReadOnlyList<LicenseMetadata>> GetAllLicenses();
 
         /// <summary>
-        /// Retrieves a license based on the licence key such as "mit"
+        /// Retrieves a license based on the license key such as "mit"
         /// </summary>
         /// <param name="key"></param>
         /// <returns>A <see cref="License" /> that includes the license key, text, and attributes of the license.</returns>
@@ -65,7 +73,15 @@ namespace Octokit
         /// </summary>
         /// <exception cref="ApiException">Thrown when a general API error occurs.</exception>
         /// <returns>An <see cref="MiscellaneousRateLimit"/> of Rate Limits.</returns>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1024:UsePropertiesWhereAppropriate")]
+        [SuppressMessage("Microsoft.Design", "CA1024:UsePropertiesWhereAppropriate")]
         Task<MiscellaneousRateLimit> GetRateLimits();
+
+        /// <summary>
+        /// Retrieves information about GitHub.com, the service or a GitHub Enterprise installation.
+        /// </summary>
+        /// <exception cref="ApiException">Thrown when a general API error occurs.</exception>
+        /// <returns>An <see cref="Meta"/> containing metadata about the GitHub instance.</returns>
+        [SuppressMessage("Microsoft.Design", "CA1024:UsePropertiesWhereAppropriate")]
+        Task<Meta> GetMetadata();
     }
 }

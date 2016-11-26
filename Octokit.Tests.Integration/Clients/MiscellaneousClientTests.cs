@@ -100,7 +100,24 @@ public class MiscellaneousClientTests
             Assert.True(result.Rate.Remaining <= result.Rate.Limit);
             Assert.True(result.Resources.Search.ResetAsUtcEpochSeconds > 0);
             Assert.NotNull(result.Resources.Search.Reset);
+        }
+    }
 
+    public class TheGetMetadataMethod
+    {
+        [IntegrationTest]
+        public async Task CanRetrieveMetadata()
+        {
+            var github = Helper.GetAnonymousClient();
+
+            var result = await github.Miscellaneous.GetMetadata();
+
+            Assert.True(result.VerifiablePasswordAuthentication);
+            Assert.NotEmpty(result.GitHubServicesSha);
+            Assert.True(result.Hooks.Count > 0);
+            Assert.True(result.Git.Count > 0);
+            Assert.True(result.Pages.Count > 0);
+            Assert.True(result.Importer.Count > 0);
         }
     }
 }

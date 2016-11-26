@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Reactive.Linq;
 using System.Reactive.Threading.Tasks;
 
@@ -8,11 +9,11 @@ namespace Octokit.Reactive
     {
         readonly IMiscellaneousClient _client;
 
-        public ObservableMiscellaneousClient(IMiscellaneousClient client)
+        public ObservableMiscellaneousClient(IGitHubClient client)
         {
             Ensure.ArgumentNotNull(client, "client");
 
-            _client = client;
+            _client = client.Miscellaneous;
         }
 
         /// <summary>
@@ -23,6 +24,17 @@ namespace Octokit.Reactive
         public IObservable<Emoji> GetAllEmojis()
         {
             return _client.GetAllEmojis().ToObservable().SelectMany(e => e);
+        }
+
+        /// <summary>
+        /// Gets the rendered Markdown for an arbitrary markdown document.
+        /// </summary>
+        /// <param name="markdown">An arbitrary Markdown document</param>
+        /// <exception cref="ApiException">Thrown when a general API error occurs.</exception>
+        /// <returns>The rendered Markdown.</returns>
+        public IObservable<string> RenderArbitraryMarkdown(NewArbitraryMarkdown markdown)
+        {
+            return _client.RenderArbitraryMarkdown(markdown).ToObservable();
         }
 
         /// <summary>
@@ -66,7 +78,7 @@ namespace Octokit.Reactive
         }
 
         /// <summary>
-        /// Retrieves a license based on the licence key such as "mit"
+        /// Retrieves a license based on the license key such as "mit"
         /// </summary>
         /// <param name="key"></param>
         /// <returns>A <see cref="License" /> that includes the license key, text, and attributes of the license.</returns>
@@ -80,10 +92,21 @@ namespace Octokit.Reactive
         /// </summary>
         /// <exception cref="ApiException">Thrown when a general API error occurs.</exception>
         /// <returns>An <see cref="MiscellaneousRateLimit"/> of Rate Limits.</returns>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1024:UsePropertiesWhereAppropriate")]
+        [SuppressMessage("Microsoft.Design", "CA1024:UsePropertiesWhereAppropriate")]
         public IObservable<MiscellaneousRateLimit> GetRateLimits()
         {
             return _client.GetRateLimits().ToObservable();
+        }
+
+        /// <summary>
+        /// Retrieves information about GitHub.com, the service or a GitHub Enterprise installation.
+        /// </summary>
+        /// <exception cref="ApiException">Thrown when a general API error occurs.</exception>
+        /// <returns>An <see cref="Meta"/> containing metadata about the GitHub instance.</returns>
+        [SuppressMessage("Microsoft.Design", "CA1024:UsePropertiesWhereAppropriate")]
+        public IObservable<Meta> GetMetadata()
+        {
+            return _client.GetMetadata().ToObservable();
         }
     }
 }

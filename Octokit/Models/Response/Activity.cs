@@ -2,7 +2,6 @@
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
-using Octokit;
 
 namespace Octokit
 {
@@ -70,7 +69,7 @@ namespace Octokit
         {
             get
             {
-                return String.Format(CultureInfo.InvariantCulture, "Type: {0}", Type);
+                return string.Format(CultureInfo.InvariantCulture, "Type: {0}", Type);
             }
         }
     }

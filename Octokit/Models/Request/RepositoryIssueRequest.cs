@@ -2,6 +2,9 @@
 
 namespace Octokit
 {
+    /// <summary>
+    /// Used to request and filter a list of repository issues.
+    /// </summary>
     [DebuggerDisplay("{DebuggerDisplay,nq}")]
     public class RepositoryIssueRequest : IssueRequest
     {

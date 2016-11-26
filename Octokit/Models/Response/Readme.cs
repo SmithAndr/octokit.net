@@ -45,7 +45,7 @@ namespace Octokit
         public Uri Url { get; private set; }
 
         [SuppressMessage("Microsoft.Design", "CA1024:UsePropertiesWhereAppropriate",
-            Justification = "Makse a network request")]
+            Justification = "Makes a network request")]
         public Task<string> GetHtmlContent()
         {
             return htmlContent.Value;
@@ -55,7 +55,7 @@ namespace Octokit
         {
             get
             {
-                return String.Format(CultureInfo.InvariantCulture, "Name: {0} ", Name);
+                return string.Format(CultureInfo.InvariantCulture, "Name: {0} ", Name);
             }
         }
     }

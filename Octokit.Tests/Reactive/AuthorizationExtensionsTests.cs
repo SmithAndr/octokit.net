@@ -12,7 +12,7 @@ namespace Octokit.Tests.Reactive
         public class TheGetOrCreateApplicationAuthenticationMethod
         {
             [Fact]
-            public async Task UsesCallbackToRetrievTwoFactorCode()
+            public async Task UsesCallbackToRetrieveTwoFactorCode()
             {
                 var firstResponse = new TwoFactorRequiredException(TwoFactorType.AuthenticatorApp);
                 var twoFactorChallengeResult = new TwoFactorChallengeResult("two-factor-code");
@@ -31,7 +31,7 @@ namespace Octokit.Tests.Reactive
                 var result = await client.GetOrCreateApplicationAuthentication(
                     "clientId",
                     "secret",
-                    new NewAuthorization { Note = "Was it this one?"},
+                    new NewAuthorization { Note = "Was it this one?" },
                     _ => Observable.Return(twoFactorChallengeResult));
 
                 Assert.Equal("OAUTHSECRET", result.Token);
@@ -84,7 +84,7 @@ namespace Octokit.Tests.Reactive
                 var challengeResults = new Queue<TwoFactorChallengeResult>(new[]
                 {
                     TwoFactorChallengeResult.RequestResendCode,
-                    new TwoFactorChallengeResult("wrong-code") 
+                    new TwoFactorChallengeResult("wrong-code")
                 });
                 var twoFactorFailedException = new TwoFactorChallengeFailedException();
                 var data = new NewAuthorization();

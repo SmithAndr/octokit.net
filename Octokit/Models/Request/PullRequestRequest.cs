@@ -1,24 +1,26 @@
-﻿using System;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.Globalization;
 using Octokit.Internal;
 
 namespace Octokit
 {
+    /// <summary>
+    /// Used to filter requests for lists of pull requests.
+    /// </summary>
     [DebuggerDisplay("{DebuggerDisplay,nq}")]
     public class PullRequestRequest : RequestParameters
     {
         public PullRequestRequest()
         {
-            State = ItemState.Open;
+            State = ItemStateFilter.Open;
             SortProperty = PullRequestSort.Created;
             SortDirection = SortDirection.Descending;
         }
 
         /// <summary>
-        /// "open" or "closed" to filter by state. Default is "open".
+        /// Which PullRequests to get. The default is <see cref="ItemStateFilter.Open"/>
         /// </summary>
-        public ItemState State { get; set; }
+        public ItemStateFilter State { get; set; }
 
         /// <summary>
         /// Filter pulls by head user and branch name in the format of "user:ref-name".
@@ -33,20 +35,20 @@ namespace Octokit
         /// <summary>
         /// What property to sort pull requests by.
         /// </summary>
-        [Parameter(Key="sort")]
+        [Parameter(Key = "sort")]
         public PullRequestSort SortProperty { get; set; }
 
         /// <summary>
         /// What direction to sort the pull requests.
         /// </summary>
-        [Parameter(Key="direction")]
+        [Parameter(Key = "direction")]
         public SortDirection SortDirection { get; set; }
 
         internal string DebuggerDisplay
         {
             get
             {
-                return String.Format(CultureInfo.InvariantCulture, "Base: {0} ", Base);
+                return string.Format(CultureInfo.InvariantCulture, "Base: {0} ", Base);
             }
         }
     }
@@ -68,7 +70,7 @@ namespace Octokit
         /// <summary>
         /// Sort by age (filtering by pulls updated in the last month)
         /// </summary>
-        [Parameter(Value= "long-running")]
+        [Parameter(Value = "long-running")]
         LongRunning
     }
 }

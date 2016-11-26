@@ -1,15 +1,12 @@
-﻿using System;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.Globalization;
-
-using Octokit.Helpers;
 
 namespace Octokit
 {
     [DebuggerDisplay("{DebuggerDisplay,nq}")]
     public class ResourceRateLimit
     {
-        public ResourceRateLimit() {}
+        public ResourceRateLimit() { }
 
         public ResourceRateLimit(RateLimit core, RateLimit search)
         {
@@ -34,9 +31,8 @@ namespace Octokit
         {
             get
             {
-                return String.Format(CultureInfo.InvariantCulture, "Core: {0}; Search: {1} ", Core.DebuggerDisplay, Search.DebuggerDisplay);
+                return string.Format(CultureInfo.InvariantCulture, "Core: {0}; Search: {1} ", Core.DebuggerDisplay, Search.DebuggerDisplay);
             }
         }
     }
-
 }

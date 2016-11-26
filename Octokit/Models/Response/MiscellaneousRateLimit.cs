@@ -1,17 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.Globalization;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Octokit
 {
     [DebuggerDisplay("{DebuggerDisplay,nq}")]
     public class MiscellaneousRateLimit
     {
-        public MiscellaneousRateLimit() {}
+        public MiscellaneousRateLimit() { }
 
         public MiscellaneousRateLimit(ResourceRateLimit resources, RateLimit rate)
         {
@@ -36,7 +31,7 @@ namespace Octokit
         {
             get
             {
-                return Resources == null ? "No rates found" : String.Format(CultureInfo.InvariantCulture, Resources.DebuggerDisplay);
+                return Resources == null ? "No rates found" : string.Format(CultureInfo.InvariantCulture, Resources.DebuggerDisplay);
             }
         }
     }

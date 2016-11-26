@@ -35,20 +35,28 @@ It is **strongly recommended** to use the [OAuth Flow](https://github.com/octoki
 
 When authenticated, you have 5000 requests per hour available. So this is the recommended approach for interacting with the API.
 
-### Connecting to GitHub Enterprise
+### Connect to GitHub Enterprise
 
 Octokit also supports connecting to GitHub Enterprise environments - just provide the URL to your GitHub Enterprise server when creating the client.
 
-```
+```csharp
 var ghe = new Uri("https://github.myenterprise.com/");
 var client = new GitHubClient(new ProductHeaderValue("my-cool-app"), ghe);
 ```
 
-### Get exploring
+You can use the `EnterpriseProbe` class to test whether a URL points to a Github Enterprise instance.
 
-Once you've got that setup, the simplest thing to experiment with is fetching details about a specific user:
-
+```csharp
+var probe = new EnterpriseProbe(new ProductHeaderValue("my-cool-app"));
+var result = await probe.Probe(new Uri("http://ghe.example.com/"));
+Assert.Equal(EnterpriseProbeResult.Ok, result); 
 ```
+
+### Get some data
+
+Once you have that setup, the simplest thing to experiment with is fetching details about a specific user:
+
+```csharp
 var user = await client.User.Get("shiftkey");
 Console.WriteLine("{0} has {1} public repositories - go check out their profile at {2}",
 	user.Name,

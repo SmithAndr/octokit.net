@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
-using System.Globalization;
 using System.Diagnostics.CodeAnalysis;
-using Octokit.Internal;
+using System.Globalization;
 
 namespace Octokit
 {
@@ -67,7 +66,7 @@ namespace Octokit
         {
             get
             {
-                return String.Format(CultureInfo.InvariantCulture, "Id: {0} CreatedAt: {1}", Id, CreatedAt);
+                return string.Format(CultureInfo.InvariantCulture, "Id: {0} CreatedAt: {1}", Id, CreatedAt);
             }
         }
     }
@@ -167,5 +166,24 @@ namespace Octokit
         /// The actor unsubscribed from notifications for an issue.
         /// </summary>
         Unsubscribed,
+
+        /// <summary>
+        /// A comment was added to the issue.
+        /// </summary>
+        Commented,
+
+        /// <summary>
+        /// A commit was added to the pull request's HEAD branch.
+        /// Only provided for pull requests.
+        /// </summary>
+        Committed,
+
+        /// <summary>
+        /// The issue was referenced from another issue.
+        /// The source attribute contains the id, actor, and
+        /// url of the reference's source.
+        /// </summary>
+        [SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Crossreferenced")]
+        Crossreferenced
     }
 }

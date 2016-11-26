@@ -20,6 +20,8 @@ namespace Octokit.Internal
     {
         readonly HttpClient _http;
 
+        public const string RedirectCountKey = "RedirectCount";
+
         [SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope")]
         public HttpClientAdapter(Func<HttpMessageHandler> getHandler)
         {
@@ -42,9 +44,8 @@ namespace Octokit.Internal
 
             using (var requestMessage = BuildRequestMessage(request))
             {
-                // Make the request
-                var responseMessage = await _http.SendAsync(requestMessage, HttpCompletionOption.ResponseContentRead, cancellationTokenForRequest)
-                                                .ConfigureAwait(false);
+                var responseMessage = await SendAsync(requestMessage, cancellationTokenForRequest).ConfigureAwait(false);
+
                 return await BuildResponse(responseMessage).ConfigureAwait(false);
             }
         }
@@ -64,22 +65,28 @@ namespace Octokit.Internal
             return cancellationTokenForRequest;
         }
 
-        protected async virtual Task<IResponse> BuildResponse(HttpResponseMessage responseMessage)
+        protected virtual async Task<IResponse> BuildResponse(HttpResponseMessage responseMessage)
         {
             Ensure.ArgumentNotNull(responseMessage, "responseMessage");
 
             object responseBody = null;
             string contentType = null;
+
+            // We added support for downloading images,zip-files and application/octet-stream. 
+            // Let's constrain this appropriately.
+            var binaryContentTypes = new[] {
+                "application/zip" ,
+                "application/x-gzip" ,
+                "application/octet-stream"};
+
             using (var content = responseMessage.Content)
             {
                 if (content != null)
                 {
                     contentType = GetContentMediaType(responseMessage.Content);
 
-                    // We added support for downloading images and zip-files. Let's constrain this appropriately.
-                    if (contentType != null && (contentType.StartsWith("image/")
-                        || contentType.Equals("application/zip", StringComparison.OrdinalIgnoreCase)
-                        || contentType.Equals("application/x-gzip", StringComparison.OrdinalIgnoreCase)))
+                    if (contentType != null && (contentType.StartsWith("image/") || binaryContentTypes
+                        .Any(item => item.Equals(contentType, StringComparison.OrdinalIgnoreCase))))
                     {
                         responseBody = await responseMessage.Content.ReadAsByteArrayAsync().ConfigureAwait(false);
                     }
@@ -163,19 +170,20 @@ namespace Octokit.Internal
                 if (_http != null) _http.Dispose();
             }
         }
-    }
 
-    internal class RedirectHandler : DelegatingHandler
-    {
-        public const string RedirectCountKey = "RedirectCount";
-        public bool Enabled { get; set; }
-
-        protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
+        public async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
         {
-            var response = await base.SendAsync(request, cancellationToken);
+            // Clone the request/content incase we get a redirect
+            var clonedRequest = await CloneHttpRequestMessageAsync(request).ConfigureAwait(false);
 
-            // Can't redirect without somewhere to redirect too.  Throw?
-            if (response.Headers.Location == null) return response;
+            // Send initial response
+            var response = await _http.SendAsync(request, HttpCompletionOption.ResponseContentRead, cancellationToken).ConfigureAwait(false);
+
+            // Can't redirect without somewhere to redirect to.
+            if (response.Headers.Location == null)
+            {
+                return response;
+            }
 
             // Don't redirect if we exceed max number of redirects
             var redirectCount = 0;
@@ -187,7 +195,6 @@ namespace Octokit.Internal
             {
                 throw new InvalidOperationException("The redirect count for this request has been exceeded. Aborting.");
             }
-            request.Properties[RedirectCountKey] = ++redirectCount;
 
             if (response.StatusCode == HttpStatusCode.MovedPermanently
                         || response.StatusCode == HttpStatusCode.Redirect
@@ -195,55 +202,71 @@ namespace Octokit.Internal
                         || response.StatusCode == HttpStatusCode.SeeOther
                         || response.StatusCode == HttpStatusCode.TemporaryRedirect
                         || (int)response.StatusCode == 308)
-                    {
-                        var newRequest = CopyRequest(response.RequestMessage);
+            {
+                if (response.StatusCode == HttpStatusCode.SeeOther)
+                {
+                    clonedRequest.Content = null;
+                    clonedRequest.Method = HttpMethod.Get;
+                }
 
-                        if (response.StatusCode == HttpStatusCode.SeeOther)
-                        {
-                            newRequest.Content = null;
-                            newRequest.Method = HttpMethod.Get;
-                        }
-                        else
-                        {
-                            if (request.Content != null && request.Content.Headers.ContentLength != 0)  {
-                                var stream = await request.Content.ReadAsStreamAsync();
-                                if (stream.CanSeek)
-                                {
-                                    stream.Position = 0;
-                                }
-                                else
-                                {
-                                    throw new Exception("Cannot redirect a request with an unbuffered body"); 
-                                }  
-                                newRequest.Content = new StreamContent(stream);
-                            }
-                        }
-                        newRequest.RequestUri = response.Headers.Location;
-                        if (String.Compare(newRequest.RequestUri.Host, request.RequestUri.Host, StringComparison.OrdinalIgnoreCase) != 0)
-                        {
-                            newRequest.Headers.Authorization = null;
-                        }
-                        response = await this.SendAsync(newRequest, cancellationToken);
-                    }
+                // Increment the redirect count
+                clonedRequest.Properties[RedirectCountKey] = ++redirectCount;
+
+                // Set the new Uri based on location header
+                clonedRequest.RequestUri = response.Headers.Location;
+
+                // Clear authentication if redirected to a different host
+                if (string.Compare(clonedRequest.RequestUri.Host, request.RequestUri.Host, StringComparison.OrdinalIgnoreCase) != 0)
+                {
+                    clonedRequest.Headers.Authorization = null;
+                }
+
+                // Send redirected request
+                response = await SendAsync(clonedRequest, cancellationToken).ConfigureAwait(false);
+            }
 
             return response;
         }
 
-        [SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope")]
-        private static HttpRequestMessage CopyRequest(HttpRequestMessage oldRequest)
+        public static async Task<HttpRequestMessage> CloneHttpRequestMessageAsync(HttpRequestMessage oldRequest)
         {
-            var newrequest = new HttpRequestMessage(oldRequest.Method, oldRequest.RequestUri);
+            var newRequest = new HttpRequestMessage(oldRequest.Method, oldRequest.RequestUri);
+
+            // Copy the request's content (via a MemoryStream) into the cloned object
+            var ms = new MemoryStream();
+            if (oldRequest.Content != null)
+            {
+                await oldRequest.Content.CopyToAsync(ms).ConfigureAwait(false);
+                ms.Position = 0;
+                newRequest.Content = new StreamContent(ms);
+
+                // Copy the content headers
+                if (oldRequest.Content.Headers != null)
+                {
+                    foreach (var h in oldRequest.Content.Headers)
+                    {
+                        newRequest.Content.Headers.Add(h.Key, h.Value);
+                    }
+                }
+            }
+
+            newRequest.Version = oldRequest.Version;
 
             foreach (var header in oldRequest.Headers)
             {
-                newrequest.Headers.TryAddWithoutValidation(header.Key, header.Value);
-            }
-            foreach (var property in oldRequest.Properties)
-            {
-                newrequest.Properties.Add(property);
+                newRequest.Headers.TryAddWithoutValidation(header.Key, header.Value);
             }
 
-            return newrequest;
+            foreach (var property in oldRequest.Properties)
+            {
+                newRequest.Properties.Add(property);
+            }
+
+            return newRequest;
         }
+    }
+
+    internal class RedirectHandler : DelegatingHandler
+    {
     }
 }

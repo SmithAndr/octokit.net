@@ -1,5 +1,4 @@
-﻿using System;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.Globalization;
 
 namespace Octokit
@@ -27,9 +26,8 @@ namespace Octokit
         {
             get
             {
-                return String.Format(CultureInfo.InvariantCulture, "GitIgnore: {0}", Name);
+                return string.Format(CultureInfo.InvariantCulture, "GitIgnore: {0}", Name);
             }
         }
-
     }
 }

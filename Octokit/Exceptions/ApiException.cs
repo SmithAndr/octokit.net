@@ -2,6 +2,7 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Net;
 using System.Runtime.Serialization;
+using System.Security;
 using Octokit.Internal;
 
 namespace Octokit
@@ -126,7 +127,7 @@ namespace Octokit
         {
             try
             {
-                if (!String.IsNullOrEmpty(responseContent))
+                if (!string.IsNullOrEmpty(responseContent))
                 {
                     return _jsonSerializer.Deserialize<ApiError>(responseContent) ?? new ApiError(responseContent);
                 }
@@ -154,10 +155,11 @@ namespace Octokit
             : base(info, context)
         {
             if (info == null) return;
-            StatusCode = (HttpStatusCode)(info.GetInt32("HttpStatusCode"));
-            ApiError = (ApiError)(info.GetValue("ApiError", typeof(ApiError)));
+            StatusCode = (HttpStatusCode) info.GetInt32("HttpStatusCode");
+            ApiError = (ApiError) info.GetValue("ApiError", typeof(ApiError));
         }
 
+        [SecurityCritical]
         public override void GetObjectData(SerializationInfo info, StreamingContext context)
         {
             base.GetObjectData(info, context);
@@ -178,6 +180,30 @@ namespace Octokit
             {
                 return ApiError != null ? ApiError.Message : null;
             }
+        }
+
+        /// <summary>
+        /// Get the inner http response body from the API response
+        /// </summary>
+        /// <remarks>
+        /// Returns empty string if HttpResponse is not populated or if
+        /// response body is not a string
+        /// </remarks>
+        protected string HttpResponseBodySafe
+        {
+            get
+            {
+                return HttpResponse != null
+                       && !HttpResponse.ContentType.StartsWith("image/", StringComparison.OrdinalIgnoreCase)
+                       && HttpResponse.Body is string
+                    ? (string)HttpResponse.Body : string.Empty;
+            }
+        }
+
+        public override string ToString()
+        {
+            var original = base.ToString();
+            return original + Environment.NewLine + HttpResponseBodySafe;
         }
     }
 }
