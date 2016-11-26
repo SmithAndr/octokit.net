@@ -1,0 +1,35 @@
+{
+  "name": "Octokit.Core",
+
+  "version": "0.21.1",
+
+  "buildOptions": {
+    "define": [ "TRACE", "DEBUG", "CODE_ANALYSIS", "NETFX_CORE", "CODE_ANALYSIS", "SIMPLE_JSON_OBJARRAYINTERNAL", "SIMPLE_JSON_INTERNAL", "NET_45", "PORTABLE", "SIMPLE_JSON_READONLY_COLLECTIONS" ]
+  },
+
+  "dependencies": {
+    "Microsoft.NETCore.App": {
+      "version": "1.0.0",
+      "type": "platform"
+    },
+    "Microsoft.Net.Http": "2.2.29",
+    "NETStandard.Library": "1.6.0",
+    "System.Runtime.Serialization.Primitives": "4.1.1"
+  },
+
+  "frameworks": {
+    "netcoreapp1.0": {
+      "imports": [
+        "dotnet5.6",
+        "dnxcore50",
+        "portable-net45+win8"
+      ]
+    }
+  },
+
+  "scripts": {
+    "postcompile": [
+      "dotnet pack --no-build --configuration %compile:Configuration%"
+    ]
+  }
+}
